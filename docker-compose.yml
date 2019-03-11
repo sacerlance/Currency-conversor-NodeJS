@@ -1,0 +1,37 @@
+version: '3'
+
+networks:
+  local:
+    driver: bridge
+
+services:
+  conversor_database:
+    image: mysql:5.7
+    volumes:
+      - ./mysql_data:/var/lib/mysql
+    networks:
+      local:
+        aliases:
+          - conversor_database
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: conversor_db
+      MYSQL_USER: rendafer
+      MYSQL_PASSWORD: password
+    ports:
+      - 3306:3306
+
+  conversor_api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/opt/app
+    ports:
+      - 8000:80
+    networks:
+      local:
+        aliases:
+          - conversor_app
+    depends_on:
+      - 'conversor_database'
